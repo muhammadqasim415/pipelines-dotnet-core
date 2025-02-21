@@ -14,9 +14,9 @@ variables:
   buildConfiguration: 'Release'
 
   #Replace these variables to suit your application
-  projectName: 'WeatherService'
-  websiteName: 'WeatherService'
-  appPoolName: 'WeatherService'
+  projectName: 'practice'
+  websiteName: 'hashirweb.online'
+  appPoolName: 'app'
 
 stages:
 - stage: 'Build'
