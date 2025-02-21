@@ -13,28 +13,45 @@ pool:
 variables:
   buildConfiguration: 'Release'
 
+  #Replace these variables to suit your application
+  projectName: 'WeatherService'
+  websiteName: 'WeatherService'
+  appPoolName: 'WeatherService'
+
 stages:
-- stage: Build
-  displayName: "Build Stage"
+- stage: 'Build'
+  displayName: 'Build'
   jobs:
-  - job: BuildJob
-    displayName: "Building the Application"
-    steps:
-    - script: dotnet build --configuration $(buildConfiguration)
-      displayName: 'dotnet build $(buildConfiguration)'
+     - job: 
+       steps:  
+        - task: DotNetCoreCLI@2
+          displayName: 'dotnet restore'
+          inputs:
+            command: 'restore'
+            projects: '*.sln'
 
-- stage: Publish
-  displayName: "Publish Stage"
-  dependsOn: Build
-  jobs:
-  - job: PublishJob
-    displayName: "Publishing the Application"
-    steps:
-    - script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
-      displayName: 'dotnet publish'
+        - task: DotNetCoreCLI@2
+          displayName: Build
+          inputs:
+            command: 'build'
+            projects: '*.sln'
+            arguments: --configuration Release
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathToPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: 'published_app'
-      displayName: 'Publish Artifacts'
+        - task: DotNetCoreCLI@2
+          displayName: Test
+          inputs:
+            command: test
+            projects: '*.sln'
+            arguments: '--configuration $(BuildConfiguration)'
+
+        - task: DotNetCoreCLI@2
+          displayName: 'Publish the project - $(buildConfiguration)'
+          inputs:
+            command: 'publish'
+            projects: '**/*.csproj'
+            publishWebProjects: false
+            arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
+            zipAfterPublish: true
+
+        - publish: '$(Build.ArtifactStagingDirectory)'
+          artifact: drop
