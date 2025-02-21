@@ -27,6 +27,7 @@ stages:
         - task: DotNetCoreCLI@2
           displayName: 'dotnet restore'
           inputs:
+            azureSubscription: 'Azure subscription 1(2caafef1-42d4-4c98-8f82-e05ddca5e5a8)'
             command: 'restore'
             projects: '*.sln'
             feedsToUse: 'select'
